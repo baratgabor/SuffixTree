@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.106
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuffixTree", "SuffixTree\SuffixTree.csproj", "{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FB506607-7015-46D2-A983-5905B63EA6D9}
+	EndGlobalSection
+EndGlobal
