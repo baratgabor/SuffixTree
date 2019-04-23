@@ -1,0 +1,7 @@
+language: csharp
+solution: SuffixTree.sln
+install:
+  - nuget restore SuffixTree.sln
+script:
+  - msbuild /p:Configuration=Release SuffixTree.sln
+  - mono ./packages/NUnit.ConsoleRunner.3.10.0/tools/nunit3-console.exe ./SuffixTree.Tests/bin/Release/SuffixTree.Tests.dll
