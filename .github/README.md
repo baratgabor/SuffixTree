@@ -44,7 +44,7 @@ Essentially everything boils down to the following fundamental operations:
 - Insert a new explicit leaf for the current input character at the active node.
 - Rescan to set the Active Point to the correct next position.
 
-## Storage
+### Storage
 
 I used a central hashtable-based approach instead of per-node storage, which should improve the data locality and decrease the memory footprint of nodes, but probably doesn't matter much. The hashing key I used is a value tuple that combines the node reference and the character ID of the edge (I store edge information in the nodes to cut down on implementation complexity and pointer dereferencing). 
 
