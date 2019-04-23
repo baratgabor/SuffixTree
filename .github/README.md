@@ -1,5 +1,7 @@
 # Suffix Tree implementation in C# based on Ukkonen's linear time construction algorithm
 
+[![Build Status](https://travis-ci.com/baratgabor/SuffixTree.svg?branch=master)](https://travis-ci.com/baratgabor/SuffixTree)
+
 If you're here you probably know what this is, so I won't waste your time by stating the obvious.
 
 There is nothing revolutionary here. My assumption is that this repo – and especially the **[detailed description below](#plain-plain-english-explanation-of-ukkonens-algorithm)** – is mostly useful for people who are learning this algorithm the first time.
