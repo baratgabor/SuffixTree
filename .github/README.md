@@ -62,9 +62,9 @@ I'm using the 'plain-plain' prefix jokingly, because I actually struggled to fol
 
 In the sections below there is **ZERO mention of 'Rules' and 'Observations'** (who needs rules, we're all cowboys here ;)), and everything is 100% focused on actually explaining/understanding the underlying reasons. So I hope it will prove to be a refreshing read.
 
-Keep in mind that I did not intend this to be a full explanation. While I did have to cover some fundamentals to create have a reasonable narrative, but I tried to focus on aspects I found to be vague in other sources. Thus, I think the most useful part of this text is the discussion of the [differences between rescanning and using suffix links](#differences-of-rescanning-vs-using-suffix-links). as this is what gave me a *lot* of headaches in my implementation.
+Keep in mind that I did not intend this to be a full explanation. While I did have to cover some fundamentals to create have a reasonable narrative, but I tried to focus on aspects I found to be vague in other sources. Thus, I think the most useful part of this text is the discussion of the [differences between rescanning and using suffix links](#differences-of-rescanning-vs-using-suffix-links), as this is what gave me a *lot* of headaches in my implementation.
 
-*Please note that I'm not an expert on this subject, and the following sections may contain inaccuracies (or worse). If you encounter any, feel free to open an issue.*
+***Please note that I'm not an expert on this subject, so the following sections may contain inaccuracies (or worse). If you encounter any, feel free to open an issue.***
 
 ## Prerequisites
 
