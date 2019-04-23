@@ -17,24 +17,26 @@ As storage, I used a central hashtable-based approach instead of per-node storag
 This approach leads to a lean extension phase with little branching; in my case specifically the following:
 
 ```c#
-public void ExtendTree(char c)
+private void ExtendTree(char c)
 {
-    _chars[++_position] = c;
+    _chars.Add(c);
     _needSuffixLink = null;
+    _position++;
     _remainder++;
 
     while (_remainder > 0)
     {
-        if (AP.MoveDown(c))
+        if (_AP.MoveDown(c))
             break;
 
-        if (AP.ActiveLength > 0)
-            AP.ActiveParent = InsertSplit(AP);
+        if (_AP.ActiveEdge != null)
+            _AP.ActiveParent = InsertSplit(_AP);
 
-        InsertLeaf(AP, c);
+        InsertLeaf(_AP, c);
         _remainder--;
 
-        AP.Rescan();
+        if (_remainder > 0)
+            _AP.Rescan();
     }
 }
 ```
@@ -88,7 +90,7 @@ For example in case of the string *'ABCXABCY'* (see below), a branching to *X* a
 
 Once again, to emphasize – *any* operation we execute on a suffix in the tree needs to be reflected by its consecutive suffixes as well (e.g. ABC > BC > C), otherwise they simply cease to be valid suffixes.
 
-![UkkonenExample1](C:\Users\Gábor Barát\source\repos\SuffixTree\.github\UkkonenExample1.png)
+![UkkonenExample1](UkkonenExample1.png)
 
 But even if we accept that we have to do these manual updates, how do we know how many suffixes need to be updated? Since, when we add the repeated character *A* (and the rest of the repeated characters in succession), we have no idea yet when/where do we need to split the suffix into two branches. The need to split is ascertained only when we encounter the first non-repeating character, in this case *Y* (instead of the *X* that already exists in the tree).
 
@@ -122,7 +124,7 @@ When we are adding input characters to the tree, and their sequence forms a subs
 
 Consider this example, where *'ABCABD'* already occurred, and its path even contains a branching:
 
-![ActiveNodeExample](C:\Users\Gábor Barát\source\repos\SuffixTree\.github\ActiveNodeExample.png)
+![ActiveNodeExample](ActiveNodeExample.png)
 
 
 
@@ -140,7 +142,7 @@ Now, the tricky part, something that – in my experience – can cause plenty o
 
 Consider the following example of the string *'AAAABAAAABAAC'*:
 
-![UkkonenExample2](C:\Users\Gábor Barát\source\repos\SuffixTree\.github\UkkonenExample2.png)
+![UkkonenExample2](UkkonenExample2.png)
 
 You can observe above how the *'remainder'* of 7 corresponds to the total sum of characters from root, while *'active length'* of 4 corresponds to the sum of matched characters from the active edge of the active node.
 
@@ -156,7 +158,7 @@ Consider what happens at the next step of the example above. Let's compare how t
 
 ### **Using *'suffix link'*:**
 
-![Readjust-SuffixLink](C:\Users\Gábor Barát\source\repos\SuffixTree\.github\Readjust-SuffixLink.png)
+![Readjust-SuffixLink](Readjust-SuffixLink.png)
 
 Notice that if we use a suffix link, we are automatically 'at the right place'. Which is often not strictly true due to the fact that the *'active length'* can be 'incompatible' with the new position.
 
@@ -168,7 +170,7 @@ Then, after we found the next edge *'B'*, corresponding to the decremented suffi
 
 ### **Using *'rescan'*:**
 
-![Readjust-Rescan](C:\Users\Gábor Barát\source\repos\SuffixTree\.github\Readjust-Rescan.png)
+![Readjust-Rescan](Readjust-Rescan.png)
 
 
 
@@ -187,26 +189,6 @@ Note, however, that the actual *'remainder'* variable needs to be preserved, and
 3) One important remark pertaining to performance is that there is no need to check each and every character during rescanning. Due to the way a valid suffix tree is built, we can safely assume that the characters match. So you're mostly counting the lengths, and the only need for character equivalence checking arises when we jump to a new edge, since edges are identified by their first character (which is always unique in the context of a given node). This means that 'rescanning' logic is different than full string matching logic (i.e. searching for a substring in the tree).
 
 4) The original suffix linking described here is just *one of the possible approaches*. For example [NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf) names this approach as *Node-Oriented Top-Down*, and compares it to *Node-Oriented Bottom-Up* and two *Edge-Oriented* varieties. The different approaches have different typical and worst case performances, requirements, limitations, etc., but it generally seems that *Edge-Oriented* approaches are an overall improvement to the original.
-
-## Getting the longest repeated substring
-
-Just a tiny and fun section, letting you know that if you want to know how long the longest repeated substring of a string is, all you need to do is to keep track of the largest `remainder` across all extension phases while you're constructing your tree.
-
-The extension phase where you encounter the largest `remainder` directly corresponds to the longest repeated substring in your string. This is the equivalent of as keeping track of the deepest level you ever reach while constructing a traditional, non-compact search trie.
-
-But, as far as I'm aware, getting the actual longest repeated substring is a bit more difficult than in the case of a naively built trie (where you can just save the given full suffix). What I'd do is to maintain a `Stack` of edges corresponding to the sequence of edges we jumped over to reach the given `remainder`.  Then, the longest repeated substring can be constructed by reading the edge labels from that stack. A simpler solution is – again – to have a parent pointer that points upwards, in which case it's enough to save the branch node created with the deepest `remainder`, and follow the links up to the root.
-
-## A few closing words on implementation variants
-
-Now that we finished discussing the concepts of the algorithm, I should probably mention that there is a wide variety of implementations you can choose from.
-
-For example you can represent both nodes and edges as separate entities, or – as I did – forgo the explicit representation of edges.
-
-In terms of storage model, you can choose to use a linked list in each node, which might deliver excellent performance if you're working with a very limited alphabet (for example *A*, *C*, *G* and *T* in DNA analysis). Other options are using an array/`List` per node, or a single hashtable to store all nodes/edges. For large alphabets, hashing-based edge lookups can be significantly faster than linked lists.
-
-And I already mentioned different approaches to suffix linking.
-
-You can look into reducing the memory footprint of suffix trees too in e.g. [Kurtz's paper](https://bioinformatics.cs.vt.edu/~easychair/multigenome_comparisons/Kurtz_SWPracticeandExperiment_1999.pdf).
 
 
 
