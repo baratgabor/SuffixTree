@@ -56,6 +56,10 @@ Additionally, I converted my implementation to store suffix links externally as 
 
 I'll probably continue to add features, and experiment with some different designs – if my time allows.
 
+### Tests
+
+The implementation is unit-tested with NUnit. The testing currently consists of a few simple static tests for build/lookup, plus dynamic tests involving randomly constructed strings and randomly selected lookup substrings, running over thousands of cycles. I don't know how to fully test suffix tree algorithms; but hopefully this dynamic testing will prove to be robust enough.
+
 # Plain-plain English explanation of Ukkonen's algorithm
 
 I'm using the 'plain-plain' prefix jokingly, because I actually struggled to follow the widely referenced [Plain English StackOverflow explanation](https://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english/9513423#9513423). While it's certainly a decent description, it took me days (and reading through several papers) to track down and understand the 'why' and 'how' parts of some key aspects of the algorithm.
