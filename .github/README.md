@@ -1,12 +1,8 @@
-
-
-
+# Suffix Tree implementation in C# based on Ukkonen's linear time construction algorithm
 
 If you're here you probably know what this is, so I won't waste your time by stating the obvious.
 
-There is nothing revolutionary here. My assumption is that this repo (and especially the [detailed description below](#plain-plain-english-explanation-of-ukkonen's-algorithm)) is mostly useful for people who are learning this algorithm the first time.
-
-Note that I don't consider this implementation to be finished. If my time allows I'll be refactoring and improving it, adding a few features, etc. In particular, I'm interested in using structs for nodes, and exploring different suffix linking schemes, for example 'edge-oriented' linking instead of 'node-oriented' linking. The current implementation already passes my unit tests, but I can't rule out the possibility that it does not work correctly or optimally with some edge cases or adversary strings.
+There is nothing revolutionary here. My assumption is that this repo (and especially the [detailed description below](#plain-plain-english-explanation-of-ukkonens-algorithm)) is mostly useful for people who are learning this algorithm the first time.
 
 ### Some implementation details
 
