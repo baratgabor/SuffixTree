@@ -46,7 +46,9 @@ Essentially everything boils down to the following fundamental operations:
 
 ### Storage
 
-I used a central hashtable-based approach instead of per-node storage, which should improve the data locality and decrease the memory footprint of nodes, plus perform better with large alphabets than e.g. linked list based designs, but probably doesn't matter much. The hashing key I used is a value tuple that combines the node reference and the character ID of the edge (I store edge information in the nodes to cut down on implementation complexity and pointer dereferencing). 
+I used a central hashtable-based approach instead of per-node storage, which should improve the data locality and decrease the memory footprint of nodes, plus perform better with large alphabets than e.g. linked list based designs, but probably doesn't matter much. The hashing key I used is a value tuple that combines the node reference and the character ID of the edge (I store edge information in the nodes to cut down on implementation complexity and pointer dereferencing).
+
+This hashtable/dictionary based storage was inspired by [Kurtz's paper](https://bioinformatics.cs.vt.edu/~easychair/multigenome_comparisons/Kurtz_SWPracticeandExperiment_1999.pdf), but for now I implemented it with reference type nodes.
 
 Additionally, I converted my implementation to store suffix links externally as well, in another singular dictionary, which resulted in a very lean `Node` footprint.
 
