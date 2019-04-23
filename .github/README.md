@@ -50,7 +50,7 @@ I used a central hashtable-based approach instead of per-node storage, which sho
 
 This hashtable/dictionary based storage was inspired by [Kurtz's paper](https://bioinformatics.cs.vt.edu/~easychair/multigenome_comparisons/Kurtz_SWPracticeandExperiment_1999.pdf), but for now I implemented it with reference type nodes.
 
-Additionally, I converted my implementation to store suffix links externally as well, in another singular dictionary, which resulted in a very lean `Node` footprint.
+Additionally, I converted my implementation to store suffix links externally as well, in another singular dictionary, which resulted in a very lean `Node` footprint. This is especially useful because I didn't employ a different representation for leaf nodes and branch nodes, so that link reference was taking up space in all node instances.
 
 I'll probably continue to add features, and experiment with some different designs – if my time allows.
 
