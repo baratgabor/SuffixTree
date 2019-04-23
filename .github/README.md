@@ -8,8 +8,6 @@ There is nothing revolutionary here. My assumption is that this repo (and especi
 
 This implementation of Ukkonen's linear time suffix tree construction algorithm is based on my own observations. But later I realized how I approached the implementation corresponds quite well to how it's described by a [relatively recent paper by NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf), notably updating the active point mid-phase to decouple the leaf node insertion from the branching insertion.
 
-As storage, I used a central hashtable-based approach instead of per-node storage, which should improve the data locality and decrease the memory footprint of nodes, but probably doesn't matter much. The hashing key I used is a value tuple that combines the node reference and the character ID of the edge (I store edge information in the nodes to cut down on implementation complexity and pointer dereferencing).
-
 This approach leads to a lean extension phase with little branching; in my case specifically the following:
 
 ```c#
@@ -46,7 +44,13 @@ Essentially everything boils down to the following fundamental operations:
 - Insert a new explicit leaf for the current input character at the active node.
 - Rescan to set the Active Point to the correct next position.
 
+## Storage
 
+I used a central hashtable-based approach instead of per-node storage, which should improve the data locality and decrease the memory footprint of nodes, but probably doesn't matter much. The hashing key I used is a value tuple that combines the node reference and the character ID of the edge (I store edge information in the nodes to cut down on implementation complexity and pointer dereferencing). 
+
+Additionally, I converted my implementation to store suffix links externally as well, in another singular dictionary, which resulted in a very lean `Node` footprint.
+
+I'll probably continue to add features, and experiment with some different designs – if my time allows.
 
 # Plain-plain English explanation of Ukkonen's algorithm
 
