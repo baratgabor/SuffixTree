@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.28307.106
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuffixTree", "SuffixTree\SuffixTree.csproj", "{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuffixTree.Tests", "SuffixTree.Tests\SuffixTree.Tests.csproj", "{4DA29E2B-FCC5-414F-BCBC-64F570515CE7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuffixTree.Console", "SuffixTree.Console\SuffixTree.Console.csproj", "{55F658F5-963A-47C0-9D0B-7629BBCC4402}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47E0DDD2-AC33-47BF-A560-7405DEB3E3CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DA29E2B-FCC5-414F-BCBC-64F570515CE7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DA29E2B-FCC5-414F-BCBC-64F570515CE7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DA29E2B-FCC5-414F-BCBC-64F570515CE7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DA29E2B-FCC5-414F-BCBC-64F570515CE7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55F658F5-963A-47C0-9D0B-7629BBCC4402}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55F658F5-963A-47C0-9D0B-7629BBCC4402}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55F658F5-963A-47C0-9D0B-7629BBCC4402}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55F658F5-963A-47C0-9D0B-7629BBCC4402}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
