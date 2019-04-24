@@ -1,14 +1,18 @@
 # Suffix Tree implementation in C# based on Ukkonen's linear time construction algorithm
 
-[![Build Status](https://travis-ci.com/baratgabor/SuffixTree.svg?branch=master)](https://travis-ci.com/baratgabor/SuffixTree)
+Automated tests on suffix tree construction and lookups: [![Build Status](https://travis-ci.com/baratgabor/SuffixTree.svg?branch=master)](https://travis-ci.com/baratgabor/SuffixTree)
 
-If you're here you probably know what this is, so I won't waste your time by stating the obvious.
+## Who is this useful for?
 
-There is nothing revolutionary here. My assumption is that this repo – and especially the **[detailed description below](#plain-plain-english-explanation-of-ukkonens-algorithm)** – is mostly useful for people who are learning this algorithm the first time.
+This repo could be useful if you're implementing [Ukkonen's algorithm](https://en.wikipedia.org/wiki/Ukkonen%27s_algorithm) the first time, or perhaps if you're looking for a well-structured basic C# implementation to use as a basis for adding more advanced features to.
 
-### Some implementation details
+Additionally, I added below an **[extensive explanation of the algorithm](#plain-plain-english-explanation-of-ukkonens-algorithm)**, which aims to provide some supplemental explanation in a purely pragmatic, non-formal manner.
 
-This implementation of Ukkonen's linear time suffix tree construction algorithm is based on my own observations. But later I realized how I approached the implementation corresponds quite well to how it's described by a [relatively recent paper by NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf), notably updating the active point mid-phase to decouple the leaf node insertion from the branching insertion.
+## Summary
+
+This is an implementation of suffix tree construction that runs with $O(n)$ time complexity, compared to the $O(n^2)$ time complexity of naïve construction, making it viable to use for rapidly constructing suffix trees for longer strings. Its memory footprint is quite reasonable as well due to its compacted nature, compared to e.g. suffix tries. But this is [Wikipedia stuff](https://en.wikipedia.org/wiki/Suffix_tree), so I won't waste your time with it.
+
+It is based on my own observations and multiple cycles of refactoring to simplify the design. But it turned out how I approached the implementation corresponds to how it's described by e.g. a [relatively recent paper by NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf), notably updating the active point mid-phase to decouple the leaf node insertion from the branching insertion.
 
 This approach leads to a lean extension phase with little branching; in my case specifically the following:
 
@@ -37,60 +41,43 @@ private void ExtendTree(char c)
 }
 ```
 
-*(As you can observe, I call the active node 'active parent'; it seemed to make more sense in my implementation.)*
+### Implementation details
 
-Essentially everything boils down to the following fundamental operations:
+There are a multitude of ways to implement suffix trees, especially with respect to the storage model and the representation of nodes/edges. This implementation has the following characteristics:
 
-- Move down in tree while possible, extending the edge. Aka. 'implicit' insertion cycle.
-- When implicit fails, and there is an edge, split edge at Active Point, and activate the new branch node.
-- Insert a new explicit leaf for the current input character at the active node.
-- Rescan to set the Active Point to the correct next position.
+- **Central hashtable based storage:** Inspired by [Kurtz's paper](https://bioinformatics.cs.vt.edu/~easychair/multigenome_comparisons/Kurtz_SWPracticeandExperiment_1999.pdf), but for now I implemented it with reference type nodes. Performs better for large alphabets than e.g. linked list or array based storage.
+- **No explicit edge representation:** I chose to forgo representing edges as separate entities, to cut down on the complexity and the potential added cost of dereferencing. I.e. nodes store the label boundaries.
+- **Externally stored suffix links:** I store suffix links too in a central dictionary, outside of the nodes. This leads to a very lean node footprint, but at the cost of some additional lookup time.
 
-### Storage
-
-I used a central hashtable-based approach instead of per-node storage, which should improve the data locality and decrease the memory footprint of nodes, plus perform better with large alphabets than e.g. linked list based designs, but probably doesn't matter much. The hashing key I used is a value tuple that combines the node reference and the character ID of the edge (I store edge information in the nodes to cut down on implementation complexity and pointer dereferencing).
-
-This hashtable/dictionary based storage was inspired by [Kurtz's paper](https://bioinformatics.cs.vt.edu/~easychair/multigenome_comparisons/Kurtz_SWPracticeandExperiment_1999.pdf), but for now I implemented it with reference type nodes.
-
-Additionally, I converted my implementation to store suffix links externally as well, in another singular dictionary, which resulted in a very lean `Node` footprint. This is especially useful because I didn't employ a different representation for leaf nodes and branch nodes, so that link reference was taking up space in all node instances.
-
-I'll probably continue to add features, and experiment with some different designs – if my time allows.
+I plan to further refactor this implementation, to decouple the components and make them modular, add new features, try different designs, etc. – if my time allows.
 
 ### Tests
 
 The implementation is unit-tested with NUnit. The testing currently consists of a few simple static tests for build/lookup, plus dynamic tests involving randomly constructed strings and randomly selected lookup substrings, running over thousands of cycles. I don't know how to fully test suffix tree algorithms; but hopefully this dynamic testing will prove to be robust enough.
 
-# Plain-plain English explanation of Ukkonen's algorithm
+# Very plain English explanation of Ukkonen's algorithm
 
-I'm using the 'plain-plain' prefix jokingly, because I actually struggled to follow the widely referenced [Plain English StackOverflow explanation](https://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english/9513423#9513423). While it's certainly a decent description, it took me days (and reading through several papers) to track down and understand the 'why' and 'how' parts of some key aspects of the algorithm.
+I'm using the 'very plain' prefix jokingly, because I actually struggled to follow the widely referenced [Plain English StackOverflow explanation](https://stackoverflow.com/questions/9452701/ukkonens-suffix-tree-algorithm-in-plain-english/9513423#9513423). While it's certainly a decent description, it took me days (and reading through several papers) to track down and understand the 'why' and 'how' parts of some key aspects of the algorithm. My struggle is the reason why I decided to write the explanation below.
 
-In the sections below there is **ZERO mention of 'Rules' and 'Observations'** (who needs rules, we're all cowboys here ;)), and everything is 100% focused on actually explaining/understanding the underlying reasons. So I hope it will prove to be a refreshing read.
+In the following sections there is **ZERO mention of 'Rules' and 'Observations'** (who needs rules, we're all cowboys here ;)), and everything is 100% focused on actually explaining/understanding the underlying *reasons*.
 
-Keep in mind that I did not intend this to be a full explanation. While I did have to cover some fundamentals to create have a reasonable narrative, but I tried to focus on aspects I found to be vague in other sources. Thus, I think the most useful part of this text is the discussion of the [differences between rescanning and using suffix links](#differences-of-rescanning-vs-using-suffix-links), as this is what gave me a *lot* of headaches in my implementation.
+I tried to focus on aspects I found to be vague in other sources. Thus, I think the most useful part of this text is the discussion of the [differences between rescanning and using suffix links](#differences-of-rescanning-vs-using-suffix-links), as this is what gave me a *lot* of headaches in my implementation.
 
 ***Please note that I'm not an expert on this subject, so the following sections may contain inaccuracies (or worse). If you encounter any, feel free to open an issue.***
 
-## Prerequisites
+## Basic rationale
 
-This text assumes basic familiarity with the concept and rationale of *suffix trees*. This includes understanding the quadrating time complexity problem of their traditional naïve construction, what do they contain (the suffix structure and its representation as nodes and edges), and what are they generally used for.
+Originally, suffix trees could be built with quadratic ($O(n^2)$) time complexity, which is quite prohibitive for a lot of uses. [Ukkonen's algorithm](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf) reduces this time complexity to linear, essentially by employing a few 'tricks', although if Ukkonen saw Arrested Development, he might insist these [aren't tricks, but illusions](https://www.youtube.com/watch?v=X1WSH0VzoaM) (apologies for the digression).
 
-## Basic rationale of Ukkonen's algorithm
-
-[Ukkonen's algorithm](https://www.cs.helsinki.fi/u/ukkonen/SuffixT1withFigs.pdf) is used for creating a traditionally expensively built suffix tree in a computationally cheap way – in linear time, compared to the quadratic time complexity of the naïve construction algorithm.
-
-This is essentially achieved by employing a few 'tricks', although if Ukkonen saw Arrested Development, he might insist these [aren't tricks, but illusions](https://www.youtube.com/watch?v=X1WSH0VzoaM) (apologies for the digression).
-
-Additionally, the algorithm has 'on-line' property, which means we don't need to know the whole string in advance; the three can be built incrementally, character by character, from start to end.
-
-The resulting tree structure is the same as if we built a suffix tree naively by decrementally adding all full suffixes of the string, e.g. *ABCD*, *BCD*, *BC* and *D* for the string *'ABCD'*.
+With this algorithm we can extend the suffix tree character by character, from start to end, e.g. a suffix tree for the string *ABCD* can be built incrementally by adding *A*, *B*, *C*, and *D*. The resulting tree structure is the same as if we built it naively by decrementally adding all full suffixes of the string, e.g. adding *ABCD*, *BCD*, *BC*, and *D*.
 
 ## Open-ended leaf nodes and their limitations
 
-The most fundamental and easy to understand 'trick' is to realize we can just leave the end of the suffixes 'open', i.e. referencing the current length of the string instead of setting the end to a static value. This way when we proceed to add additional characters, those characters will be implicitly added to all suffix labels, without having to visit and update all of them.
+The most fundamental and easy to understand 'trick' is to realize we can just leave the end of the suffixes 'open', i.e. referencing the current length of the string instead of setting the end to a static value. This way when we add additional characters, those characters will be implicitly added to all suffix labels, without having to visit and update all of them.
 
 *It's worth noting, though, that you don't have to use an actual reference type for the open end position. For simplicity you can use a regular `int` and just designate a special value (e.g. -1) that marks the position open.*
 
-But this open ending of suffixes works only for nodes which terminate the string, i.e. the leaf nodes in the tree structure. The branching operations we execute on the tree (the addition of new branch nodes and leaf nodes) won't propagate automatically everywhere they need to.
+But this open ending of suffixes – for obvious reasons – works only for nodes that represent the end of the string, i.e. the leaf nodes in the tree structure. The branching operations we execute on the tree (the addition of new branch nodes and leaf nodes) won't propagate automatically everywhere they need to.
 
 *It's probably elementary, and wouldn't require mention, that repeated substrings don't appear explicitly in the tree, since the tree already contains these by virtue of them being repetitions; however, when the repetitive substring ends by encountering a non-repeating character, we need to create a branching at that point to represent the divergence from that point onwards.*
 
@@ -106,7 +93,7 @@ What we can do is to match the longest repeated string we can, and count how man
 
 ## The concept of 'remainder' and 'rescanning'
 
-The variable `remainder` tells us how many repeated characters we added implicitly, without branching; i.e. how many suffixes we need to visit to repeat the branching operation once we found the first non-repeating character. This essentially equals to how many characters 'deep' we are in the tree from its root.
+The variable `remainder` tells us how many repeated characters we added implicitly, without branching; i.e. how many suffixes we need to visit to repeat the branching operation once we found the first character that we cannot match. This essentially equals to how many characters 'deep' we are in the tree from its root.
 
 So, staying with the previous example of the string *ABCXABCY*, we match the repeated *ABC* part 'implicitly', incrementing `remainder` each time, which results in remainder of 3. Then we encounter the non-repeating character *'Y'*. Here we split the previously added *ABCX* into *ABC*->*X* and *ABC*->*Y*. Then we decrement `remainder` from 3 to 2, because we already took care of the *ABC* branching. Now we repeat the operation by matching the last 2 characters – *BC* – from the root to reach the point where we need to split, and we split *BCX* too into *BC*->*X* and *BC*->*Y*. Again, we decrement `remainder` to 1, and repeat the operation; until the `remainder` is 0. Lastly, we need to add the current character (*Y*) itself to the root as well.
 
@@ -116,7 +103,7 @@ As a solution, we introduce what we call *'suffix links'*.
 
 ## The concept of 'suffix links'
 
-Suffix links basically point to the positions we'd normally have to *'rescan'* to, so instead of the expensive rescan operation we can simply jump to the linked position, do our work, jump to the next linked position, and repeat.
+Suffix links basically point to the positions we'd normally have to *'rescan'* to, so instead of the expensive rescan operation we can simply jump to the linked position, do our work, jump to the next linked position, and repeat – until there are no more positions to update.
 
 Of course one big question is how to add these links. The existing answer is that we can add the links when we insert new branch nodes, utilizing the fact that, in each extension of the tree, the branch nodes are naturally created one after another in the exact order we'd need to link them together. Though, we have to link from the last created branch node (the longest suffix) to the previously created one, so we need to cache the last we create, link that to the next one we create, and cache the newly created one.
 
@@ -128,19 +115,23 @@ One consequence is that we actually often don't have suffix links to follow, bec
 
 So far we discussed multiple efficient tools for building the tree, and vaguely referred to traversing over multiple edges and nodes, but haven't yet explored the corresponding consequences and complexities.
 
-When we are adding input characters to the tree, and their sequence forms a substring that was already added to the tree, this means that, with each added character, we might have to traverse multiple levels deep in the tree to reach the position where we actually have to do our work (checking whether the next character matches).
+The previously explained concept of *'remainder'* is useful for keeping track where we are in the tree, but we have to realize it doesn't store enough information.
 
-Consider this example, where *'ABCABD'* already occurred, and its path even contains a branching:
+Firstly, we always reside on a specific edge of a node, so we need to store the edge information. We shall call this *'active edge'*.
+
+Secondly, even after adding the edge information, we still have no way to identify a position that is farther down in the tree, and not directly connected to the *root* node. So we need to store the node as well. Let's call this *'active node'*.
+
+Lastly, we can notice that the *'remainder'* is inadequate to identify a position on an edge that is not directly connected to root, because *'remainder'* is the length of the entire route; and we probably don't want to bother with remembering and subtracting the length of the previous edges. So we need a representation that is essentially the *remainder on the current edge*. This is what we call *'active length'*.
+
+This leads to what we call *'active point'* – a package of three variables that contain all the information we need to maintain about our position in the tree:
+
+`Active Point = (Active Node, Active Edge, Active Length)`
+
+You can observe on the following image how the matched route of *ABCABD* consists of 2 characters on the edge *AB* (from *root*), plus 4 characters on the edge *CABDABCABD* (from node 4) – resulting in a *'remainder'* of 6 characters. So, our current position can be identified as *Active Node 4, Active Edge C, Active Length 4*.
 
 ![ActiveNodeExample](ActiveNodeExample.png)
 
 
-
-As you can see, we started from the *root* node, traversed through edge *'A'* (with label *'AB'*) to reach node 4, where we are working on edge *'C'*. Even more precisely, we matched 4 characters from edge *'C'*.
-
-To avoid potentially rescanning the same route over and over again when we add a new (repeating) character, we have to maintain these information as *state*.
-
-This is where the concept of *'active point'* helps. It is precisely what the name suggests: the point in the tree we're currently residing. It consists of an *'active node'*, the *'active edge'* of the active node, and finally, the *'active length'* on the active edge.
 
 Another important role of the *'active point'* is that it provides an abstraction layer for our algorithm, meaning that parts of our algorithm can do their work on the *'active point'*, irrespective of whether that active point is in the root or anywhere else. This makes it easy to implement the use of suffix links in our algorithm in a clean and straight-forward way.
 
@@ -164,7 +155,7 @@ Now, after executing a branching operation at the active point, our active node 
 
 Consider what happens at the next step of the example above. Let's compare how to achieve the same result – i.e. moving to the next suffix to process – with and without a suffix link.
 
-### **Using *'suffix link'*:**
+### **Using *'suffix link'***
 
 ![Readjust-SuffixLink](Readjust-SuffixLink.png)
 
@@ -176,7 +167,7 @@ Then, after we found the next edge *'B'*, corresponding to the decremented suffi
 
 *Please note that it seems this operation is usually not referred to as 'rescanning', even though to me it seems it's the direct equivalent of rescanning, just with a shortened length and a non-root starting point.*
 
-### **Using *'rescan'*:**
+### **Using *'rescan'***
 
 ![Readjust-Rescan](Readjust-Rescan.png)
 
@@ -197,8 +188,3 @@ Note, however, that the actual *'remainder'* variable needs to be preserved, and
 3) One important remark pertaining to performance is that there is no need to check each and every character during rescanning. Due to the way a valid suffix tree is built, we can safely assume that the characters match. So you're mostly counting the lengths, and the only need for character equivalence checking arises when we jump to a new edge, since edges are identified by their first character (which is always unique in the context of a given node). This means that 'rescanning' logic is different than full string matching logic (i.e. searching for a substring in the tree).
 
 4) The original suffix linking described here is just *one of the possible approaches*. For example [NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf) names this approach as *Node-Oriented Top-Down*, and compares it to *Node-Oriented Bottom-Up* and two *Edge-Oriented* varieties. The different approaches have different typical and worst case performances, requirements, limitations, etc., but it generally seems that *Edge-Oriented* approaches are an overall improvement to the original.
-
-
-
-
-
