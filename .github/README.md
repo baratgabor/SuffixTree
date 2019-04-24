@@ -10,7 +10,7 @@ Additionally, I added below an **[extensive explanation of the algorithm](#plain
 
 ## Summary
 
-This is an implementation of suffix tree construction that runs with $O(n)$ time complexity, compared to the $O(n^2)$ time complexity of naïve construction, making it viable to use for rapidly constructing suffix trees for longer strings. Its memory footprint is quite reasonable as well due to its compacted nature, compared to e.g. suffix tries. But this is [Wikipedia stuff](https://en.wikipedia.org/wiki/Suffix_tree), so I won't waste your time with it.
+This is an implementation of suffix tree construction that runs with O(n) time complexity, compared to the O(n^2) time complexity of naïve construction, making it viable to use for rapidly constructing suffix trees for longer strings. Its memory footprint is quite reasonable as well due to its compacted nature, compared to e.g. suffix tries. But this is [Wikipedia stuff](https://en.wikipedia.org/wiki/Suffix_tree), so I won't waste your time with it.
 
 It is based on my own observations and multiple cycles of refactoring to simplify the design. But it turned out how I approached the implementation corresponds to how it's described by e.g. a [relatively recent paper by NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf), notably updating the active point mid-phase to decouple the leaf node insertion from the branching insertion.
 
