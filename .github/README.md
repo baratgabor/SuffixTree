@@ -10,9 +10,11 @@ Additionally, I added below an **[extensive explanation of the algorithm](#plain
 
 ## Summary
 
-This is an implementation of suffix tree construction that runs with O(n) time complexity, compared to the O(n^2) time complexity of naïve construction, making it viable to use for rapidly constructing suffix trees for longer strings. Its memory footprint is quite reasonable as well due to its compacted nature, compared to e.g. suffix tries. But this is [Wikipedia stuff](https://en.wikipedia.org/wiki/Suffix_tree), so I won't waste your time with it.
+This is an implementation of suffix tree construction that runs at *O(n)* time complexity, compared to the *O(n^2)* time complexity of naïve construction, making it viable for rapidly constructing suffix trees for longer strings. But this is [Wikipedia stuff](https://en.wikipedia.org/wiki/Suffix_tree), so I won't waste your time with it.
 
-It is based on my own observations and multiple cycles of refactoring to simplify the design. But it turned out how I approached the implementation corresponds to how it's described by e.g. a [relatively recent paper by NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf), notably updating the active point mid-phase to decouple the leaf node insertion from the branching insertion.
+The space complexity is of course linear as well, and the footprint of nodes is relatively small, but the entity bindings use normal 64 bit references, so currently the overall memory use doesn't compete well with state-of-the-art implementations. I don't feel good about this, so I'll probably refactor it soon. At any rate, if minimal memory use is the primary concern, [suffix arrays](https://en.wikipedia.org/wiki/Suffix_array) provide a better solution.
+
+This implementation is based on my own observations and multiple cycles of refactoring to simplify the design. But it turned out my approach corresponds well to how it's described by e.g. a [relatively recent paper by NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf), notably updating the active point mid-phase to decouple the leaf node insertion from the branching insertion.
 
 This approach leads to a lean extension phase with little branching; in my case specifically the following:
 
@@ -188,3 +190,16 @@ Note, however, that the actual *'remainder'* variable needs to be preserved, and
 3) One important remark pertaining to performance is that there is no need to check each and every character during rescanning. Due to the way a valid suffix tree is built, we can safely assume that the characters match. So you're mostly counting the lengths, and the only need for character equivalence checking arises when we jump to a new edge, since edges are identified by their first character (which is always unique in the context of a given node). This means that 'rescanning' logic is different than full string matching logic (i.e. searching for a substring in the tree).
 
 4) The original suffix linking described here is just *one of the possible approaches*. For example [NJ Larsson et al.](https://arxiv.org/pdf/1403.0457.pdf) names this approach as *Node-Oriented Top-Down*, and compares it to *Node-Oriented Bottom-Up* and two *Edge-Oriented* varieties. The different approaches have different typical and worst case performances, requirements, limitations, etc., but it generally seems that *Edge-Oriented* approaches are an overall improvement to the original.
+
+## Quick tip on 'longest repeated substring'
+
+If you happen to be interested in the longest repeated substring in a string, you should be probably aware that you can ascertain this at no additional cost (or complexity) during the construction of the tree.
+
+- The length of the longest repeated substring is the maximum `remainder` encountered during construction.
+
+- The end point of the longest repeated substring is the `position` you're at when you encounter this `maxRemainder`.
+- So, via trivial deduction, the start point of the longest repeated substring is `positionAtMaxRemainder` - `maxRemainder`.
+
+You can readily extract this substring from your string with these values.
+
+At `positionAtMaxRemainder` position there will be a branch node created to reflect the divergence onwards (hence remainder being maximum; without a divergence, remainder would still grow). This branch node will be the deepest branch node of the tree (in terms of character length from root), which is exactly what you're normally looking for when you traverse the tree for the longest repeated substring.
